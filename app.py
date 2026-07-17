@@ -13,7 +13,8 @@ from database import (
 st.set_page_config(
     page_title="Salon Job Card",
     page_icon="💇",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
 
@@ -49,56 +50,106 @@ st.divider()
 st.subheader("📝 Create Job Card")
 
 
-customer = st.text_input(
-    "Customer Name"
-)
+with st.form("job_card_form"):
 
-
-phone = st.text_input(
-    "Phone Number"
-)
-
-
-service = st.selectbox(
-    "Service",
-    [
-        "Threading",
-        "Haircut",
-        "Facial",
-        "Waxing",
-        "Hair Color",
-        "Nails",
-        "Spa",
-        "Other"
-    ]
-)
-
-
-if service == "Other":
-
-    custom_service = st.text_input(
-        "Specify Service"
+    customer = st.text_input(
+        "Customer Name"
     )
 
-    if custom_service:
-        service = custom_service
+
+    phone = st.text_input(
+        "Phone Number"
+    )
 
 
+    service = st.selectbox(
+        "Service",
+        [
+            "Threading",
+            "Haircut",
+            "Facial",
+            "Waxing",
+            "Hair Color",
+            "Nails",
+            "Spa",
+            "Other"
+        ]
+    )
 
-amount = st.number_input(
-    "Amount",
-    min_value=0.0
-)
+
+    if service == "Other":
+
+        custom_service = st.text_input(
+            "Specify Service"
+        )
+
+        if custom_service:
+            service = custom_service
 
 
-payment = st.selectbox(
-    "Payment Mode",
-    [
-        "Cash",
-        "UPI",
-        "Card"
-    ]
-)
+    amount = st.number_input(
+        "Amount",
+        min_value=0.0,
+        value=None,
+        placeholder="Enter amount"
+    )
+
+
+    payment = st.selectbox(
+        "Payment Mode",
+        [
+            "Cash",
+            "UPI",
+            "Card"
+        ]
+    )
+
+
+    save_job = st.form_submit_button(
+        "Save Job Card",
+        use_container_width=True
+    )
+
+
+# ---------------- SAVE JOB CARD ----------------
+
+if save_job:
+
+    india_timezone = pytz.timezone(
+        "Asia/Kolkata"
+    )
+
+    current_time = datetime.now(
+        india_timezone
+    )
+
+    date = current_time.date()
+    time = current_time.time()
+
+
+    if not customer or not employee:
+
+        st.error(
+            "Please fill Customer Name and Employee"
+        )
+
+    else:
+
+        add_job_card(
+            customer,
+            phone if phone else None,
+            service,
+            amount,
+            payment,
+            employee,
+            date,
+            time
+        )
+
+
+        st.success(
+            "✅ Job Card Saved Successfully"
+        )
 
 
 
