@@ -1,8 +1,11 @@
 import streamlit as st
+from datetime import datetime
+import pytz
 import pandas as pd
 import extra_streamlit_components as stx
 from database import (
     login,
+    get_user_by_username,
     add_job_card,
     get_all_job_cards,
     get_total_revenue,
@@ -35,8 +38,6 @@ if "user" not in st.session_state:
 
 st.title("Salon Management")
 
-
-# ---------------- LOGIN PAGE ----------------
 
 # ---------------- LOGIN SYSTEM ----------------
 
@@ -305,14 +306,22 @@ else:
         service = st.selectbox(
             "Service",
             [
+                "Threading",
                 "Haircut",
-                "Beard",
                 "Facial",
+                "Waxing",
                 "Hair Color",
-                "Spa",
+                "Nails",
                 "Other"
             ]
         )
+        if service == "Other":
+            custom_service = st.text_input(
+                "Specify Service"
+            )
+
+            if custom_service:
+                service = custom_service
 
 
         amount = st.number_input(
@@ -330,14 +339,16 @@ else:
             ]
         )
 
+        india_timezone = pytz.timezone("Asia/Kolkata")
 
-        date = st.date_input(
-            "Date"
-        )
+        current_time = datetime.now(india_timezone)
 
+        date = current_time.date()
 
-        time = st.time_input(
-            "Time"
+        time = current_time.time()
+
+        st.info(
+            f"Visit Time: {date} | {time.strftime('%H:%M:%S')}"
         )
 
 

@@ -546,8 +546,10 @@ def create_pdf_report(revenue, customers):
         "Salon_Report.pdf"
     )
 
-    def get_user_by_username(username):
+def get_user_by_username(username):
+
         conn = connect()
+
         cursor = conn.cursor()
 
         query = """
@@ -563,15 +565,21 @@ def create_pdf_report(revenue, customers):
 
         row = cursor.fetchone()
 
-        columns = [
-            desc[0]
-            for desc in cursor.description
-        ]
+        if row:
+
+            columns = [
+                desc[0]
+                for desc in cursor.description
+            ]
+
+            user = dict(
+                zip(columns, row)
+            )
+
+        else:
+            user = None
 
         cursor.close()
         conn.close()
 
-        if row:
-            return dict(zip(columns, row))
-
-        return None
+        return user
