@@ -10,7 +10,7 @@ def connect():
         database="postgres",
         user=st.secrets["user"],
         password=st.secrets["password"],
-        port="5432"
+        port="6543"
     )
 
     return conn
