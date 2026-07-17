@@ -1,0 +1,340 @@
+import streamlit as st
+import pandas as pd
+from database import (
+    login,
+    add_job_card,
+    get_all_job_cards,
+    get_total_revenue,
+    get_employee_sales,
+    get_total_customers,
+    get_average_bill,
+    get_service_count,
+    search_customer,
+    add_appointment,
+    get_appointments,
+    export_job_cards,
+    create_pdf_report
+)
+
+
+# Page settings
+st.set_page_config(
+    page_title="Salon Management System",
+    page_icon="💈"
+)
+
+
+# Session state for keeping user logged in
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+
+st.title("💈 Salon Management System")
+
+
+# ---------------- LOGIN PAGE ----------------
+
+if st.session_state.user is None:
+
+    st.subheader("Login")
+
+    username = st.text_input("Username")
+
+    password = st.text_input(
+        "Password",
+        type="password"
+    )
+
+
+    if st.button("Login"):
+
+        user = login(username, password)
+
+        if user:
+            st.session_state.user = user
+            st.success("Login Successful!")
+            st.rerun()
+
+        else:
+            st.error("Invalid Username or Password")
+
+
+# ---------------- AFTER LOGIN ----------------
+
+else:
+
+    user = st.session_state.user
+
+
+    st.sidebar.write(
+        f"Logged in as: {user['username']}"
+    )
+
+    if st.sidebar.button("Logout"):
+        st.session_state.user = None
+        st.rerun()
+
+
+
+    # -------- OWNER DASHBOARD --------
+
+    if user["role"] == "owner":
+
+        st.header("👑 Owner Dashboard")
+
+        revenue = get_total_revenue()
+
+        customers = get_total_customers()
+
+        avg_bill = get_average_bill()
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric(
+                "Total Revenue",
+                f"₹ {revenue}"
+            )
+
+        with col2:
+            st.metric(
+                "Customers",
+                customers
+            )
+
+        with col3:
+            st.metric(
+                "Average Bill",
+                f"₹ {avg_bill}"
+            )
+
+        st.divider()
+
+        st.subheader("📋 All Job Cards")
+
+        jobs = get_all_job_cards()
+
+        st.dataframe(jobs)
+
+        st.subheader("👨‍💼 Employee Performance")
+
+        sales = get_employee_sales()
+
+        st.dataframe(sales)
+
+        st.subheader("✂️ Popular Services")
+
+        services = get_service_count()
+
+        st.bar_chart(
+            services,
+            x="service",
+            y="count"
+        )
+
+        st.divider()
+
+        st.subheader("🔍 Customer History")
+
+        search_name = st.text_input(
+            "Enter Customer Name"
+        )
+
+        if st.button("Search Customer"):
+
+            history = search_customer(search_name)
+
+            if history:
+
+                st.dataframe(history)
+
+
+            else:
+
+                st.warning(
+                    "No customer found"
+                )
+
+        st.divider()
+
+        st.subheader("📅 Upcoming Appointments")
+
+        appointments = get_appointments()
+
+        if appointments:
+
+            st.dataframe(appointments)
+
+        else:
+
+            st.info(
+                "No appointments available"
+            )
+
+        st.subheader("📥 Export Reports")
+
+        if st.button("Generate Excel Report"):
+            data = export_job_cards()
+
+            df = pd.DataFrame(data)
+
+            excel_file = "Salon_Report.xlsx"
+
+            df.to_excel(
+                excel_file,
+                index=False
+            )
+
+            with open(excel_file, "rb") as file:
+                st.download_button(
+                    label="Download Excel",
+                    data=file,
+                    file_name="Salon_Report.xlsx"
+                )
+
+        if st.button("Generate PDF Report"):
+            create_pdf_report(
+                revenue,
+                customers
+            )
+
+            with open(
+                    "Salon_Report.pdf",
+                    "rb"
+            ) as file:
+                st.download_button(
+                    "Download PDF",
+                    file,
+                    "Salon_Report.pdf"
+                )
+
+
+    # -------- EMPLOYEE DASHBOARD --------
+
+    else:
+
+        st.header("💇 Employee Dashboard")
+
+
+        st.subheader("Create Job Card")
+
+
+        customer = st.text_input(
+            "Customer Name"
+        )
+
+
+        phone = st.text_input(
+            "Phone Number"
+        )
+
+
+        service = st.selectbox(
+            "Service",
+            [
+                "Haircut",
+                "Beard",
+                "Facial",
+                "Hair Color",
+                "Spa",
+                "Other"
+            ]
+        )
+
+
+        amount = st.number_input(
+            "Amount",
+            min_value=0.0
+        )
+
+
+        payment = st.selectbox(
+            "Payment Mode",
+            [
+                "Cash",
+                "UPI",
+                "Card"
+            ]
+        )
+
+
+        date = st.date_input(
+            "Date"
+        )
+
+
+        time = st.time_input(
+            "Time"
+        )
+
+
+        if st.button("Save Job Card"):
+
+
+            add_job_card(
+                customer,
+                phone,
+                service,
+                amount,
+                payment,
+                user["username"],
+                date,
+                time
+            )
+
+
+            st.success(
+                "✅ Job Card Saved Successfully!"
+            )
+
+        st.divider()
+
+        st.subheader("📅 Create Appointment")
+
+        app_customer = st.text_input(
+            "Customer Name",
+            key="appointment_customer"
+        )
+
+        app_phone = st.text_input(
+            "Phone Number",
+            key="appointment_phone"
+        )
+
+        app_service = st.selectbox(
+            "Service",
+            [
+                "Haircut",
+                "Beard",
+                "Facial",
+                "Hair Color",
+                "Spa"
+            ],
+            key="appointment_service"
+        )
+
+        app_date = st.date_input(
+            "Appointment Date",
+            key="appointment_date"
+        )
+
+        app_time = st.time_input(
+            "Appointment Time",
+            key="appointment_time"
+        )
+
+        if st.button("Book Appointment"):
+            add_appointment(
+
+                app_customer,
+                app_phone,
+                app_service,
+                app_date,
+                app_time,
+                user["username"]
+
+            )
+
+            st.success(
+                "Appointment Booked!"
+            )
