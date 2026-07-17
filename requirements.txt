@@ -3,3 +3,4 @@ psycopg2-binary
 pandas
 openpyxl
 fpdf2
+extra-streamlit-components
