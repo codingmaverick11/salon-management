@@ -31,25 +31,20 @@ st.set_page_config(
 cookie_manager = stx.CookieManager()
 
 
-# Session state for keeping user logged in
-if "user" not in st.session_state:
-    st.session_state.user = None
-
-
 st.title("Salon Management")
 
 
-# ---------------- LOGIN SYSTEM ----------------
-
-# Check saved login cookie
-saved_user = cookie_manager.get("logged_in_user")
-
+# ---------------- SESSION INITIALIZATION ----------------
 
 if "user" not in st.session_state:
     st.session_state.user = None
 
 
-# Auto login from cookie
+# ---------------- AUTO LOGIN FROM COOKIE ----------------
+
+saved_user = cookie_manager.get("logged_in_user")
+
+
 if st.session_state.user is None and saved_user:
 
     user = get_user_by_username(saved_user)
@@ -58,13 +53,16 @@ if st.session_state.user is None and saved_user:
         st.session_state.user = user
 
 
+
 # ---------------- LOGIN PAGE ----------------
 
 if st.session_state.user is None:
 
     st.subheader("Login")
 
-    username = st.text_input("Username")
+    username = st.text_input(
+        "Username"
+    )
 
     password = st.text_input(
         "Password",
@@ -77,19 +75,27 @@ if st.session_state.user is None:
         use_container_width=True
     ):
 
-        user = login(username, password)
+        user = login(
+            username,
+            password
+        )
+
 
         if user:
 
             st.session_state.user = user
 
-            # Save login on phone
+
+            # Save login for 30 days
             cookie_manager.set(
                 "logged_in_user",
                 user["username"]
             )
 
-            st.success("Login Successful!")
+
+            st.success(
+                "Login Successful!"
+            )
 
             st.rerun()
 
@@ -101,6 +107,7 @@ if st.session_state.user is None:
             )
 
 
+
 # ---------------- AFTER LOGIN ----------------
 
 else:
@@ -108,7 +115,7 @@ else:
     user = st.session_state.user
 
 
-    st.sidebar.write(
+    st.sidebar.success(
         f"Logged in as: {user['username']}"
     )
 
@@ -118,11 +125,21 @@ else:
         use_container_width=True
     ):
 
+
+        # Delete saved phone login
         cookie_manager.delete(
             "logged_in_user"
         )
 
+
+        # Clear all Streamlit session data
+        st.session_state.clear()
+
         st.session_state.user = None
+
+        st.success(
+            "Logged out successfully!"
+        )
 
         st.rerun()
 
@@ -181,22 +198,6 @@ else:
             use_container_width=True,
             hide_index=True
         )
-
-        st.subheader("✂️ Popular Services")
-
-        services = get_service_count()
-
-        if services:
-
-            st.bar_chart(
-                services,
-                x="service",
-                y="count"
-            )
-
-        else:
-
-            st.info("No service data available yet.")
 
         st.divider()
 
