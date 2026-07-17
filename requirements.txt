@@ -5,3 +5,4 @@ openpyxl
 fpdf2
 extra-streamlit-components
 pytz
+streamlit-cookies-controller
