@@ -143,7 +143,7 @@ if st.button(
 
         add_job_card(
             customer,
-            phone,
+            phone if phone else None,
             service,
             amount,
             payment,
