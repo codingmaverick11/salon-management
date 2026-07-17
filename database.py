@@ -87,7 +87,7 @@ def add_job_card(customer_name, phone, service,
         query,
         (
             customer_name,
-            phone if phone else None,
+            phone if phone else "None",
             service,
             amount,
             payment_mode,

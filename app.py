@@ -89,8 +89,9 @@ with st.form("job_card_form"):
 
     amount = st.number_input(
         "Amount",
-        min_value=0.0,
+        min_value=0,
         value=None,
+        step=1,
         placeholder="Enter amount"
     )
 
