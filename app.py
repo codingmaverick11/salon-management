@@ -19,8 +19,9 @@ from database import (
 
 # Page settings
 st.set_page_config(
-    page_title="Salon Management System",
-    page_icon="💈"
+    page_title="Salon Management",
+    page_icon="💇",
+    layout="centered"
 )
 
 
@@ -29,7 +30,7 @@ if "user" not in st.session_state:
     st.session_state.user = None
 
 
-st.title("💈 Salon Management System")
+st.title("Salon Management")
 
 
 # ---------------- LOGIN PAGE ----------------
@@ -46,7 +47,7 @@ if st.session_state.user is None:
     )
 
 
-    if st.button("Login"):
+    if st.button("Login", use_container_width=True):
 
         user = login(username, password)
 
@@ -70,7 +71,7 @@ else:
         f"Logged in as: {user['username']}"
     )
 
-    if st.sidebar.button("Logout"):
+    if st.sidebar.button("Logout", use_container_width=True):
         st.session_state.user = None
         st.rerun()
 
@@ -114,13 +115,21 @@ else:
 
         jobs = get_all_job_cards()
 
-        st.dataframe(jobs)
+        st.dataframe(
+            jobs,
+            use_container_width=True,
+            hide_index=True
+        )
 
         st.subheader("👨‍💼 Employee Performance")
 
         sales = get_employee_sales()
 
-        st.dataframe(sales)
+        st.dataframe(
+            sales,
+            use_container_width=True,
+            hide_index=True
+        )
 
         st.subheader("✂️ Popular Services")
 
@@ -146,13 +155,17 @@ else:
             "Enter Customer Name"
         )
 
-        if st.button("Search Customer"):
+        if st.button("Search Customer", use_container_width=True):
 
             history = search_customer(search_name)
 
             if history:
 
-                st.dataframe(history)
+                st.dataframe(
+                    history,
+                    use_container_width=True,
+                    hide_index=True
+                )
 
 
             else:
@@ -169,7 +182,11 @@ else:
 
         if appointments:
 
-            st.dataframe(appointments)
+            st.dataframe(
+                appointments,
+                use_container_width=True,
+                hide_index=True
+            )
 
         else:
 
@@ -179,7 +196,7 @@ else:
 
         st.subheader("📥 Export Reports")
 
-        if st.button("Generate Excel Report"):
+        if st.button("Generate Excel Report", use_container_width=True):
             data = export_job_cards()
 
             df = pd.DataFrame(data)
@@ -198,7 +215,7 @@ else:
                     file_name="Salon_Report.xlsx"
                 )
 
-        if st.button("Generate PDF Report"):
+        if st.button("Generate PDF Report", use_container_width=True):
             create_pdf_report(
                 revenue,
                 customers
@@ -274,7 +291,7 @@ else:
         )
 
 
-        if st.button("Save Job Card"):
+        if st.button("Save Job Card", use_container_width=True):
 
 
             add_job_card(
@@ -329,7 +346,7 @@ else:
             key="appointment_time"
         )
 
-        if st.button("Book Appointment"):
+        if st.button("Book Appointment", use_container_width=True):
             add_appointment(
 
                 app_customer,
