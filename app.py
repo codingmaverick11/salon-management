@@ -126,11 +126,17 @@ else:
 
         services = get_service_count()
 
-        st.bar_chart(
-            services,
-            x="service",
-            y="count"
-        )
+        if services:
+
+            st.bar_chart(
+                services,
+                x="service",
+                y="count"
+            )
+
+        else:
+
+            st.info("No service data available yet.")
 
         st.divider()
 
