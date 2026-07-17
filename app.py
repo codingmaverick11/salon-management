@@ -104,54 +104,6 @@ with st.form("job_card_form"):
         ]
     )
 
-
-    save_job = st.form_submit_button(
-        "Save Job Card",
-        use_container_width=True
-    )
-
-
-# ---------------- SAVE JOB CARD ----------------
-
-if save_job:
-
-    india_timezone = pytz.timezone(
-        "Asia/Kolkata"
-    )
-
-    current_time = datetime.now(
-        india_timezone
-    )
-
-    date = current_time.date()
-    time = current_time.time()
-
-
-    if not customer or not employee:
-
-        st.error(
-            "Please fill Customer Name and Employee"
-        )
-
-    else:
-
-        add_job_card(
-            customer,
-            phone if phone else None,
-            service,
-            amount,
-            payment,
-            employee,
-            date,
-            time
-        )
-
-
-        st.success(
-            "✅ Job Card Saved Successfully"
-        )
-
-
 # Automatic timestamp
 
 india_timezone = pytz.timezone(
