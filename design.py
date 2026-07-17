@@ -116,14 +116,41 @@ def apply_theme():
         }}
 
         /* ---------- inputs ---------- */
-        .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input,
+
+        .stTextInput input,
+        .stNumberInput input,
+        .stDateInput input,
+        .stTimeInput input {{
+            background: var(--surface) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 8px !important;
+            color: #2B2323 !important;
+            -webkit-text-fill-color: #2B2323 !important;
+        }}
+        
+        
+        .stTextInput input::placeholder,
+        .stNumberInput input::placeholder {{
+            color: #6B615F !important;
+        }}
+        
+        
         [data-baseweb="select"] > div {{
             background: var(--surface) !important;
             border: 1px solid var(--border) !important;
             border-radius: 8px !important;
-            color: var(--ink) !important;
         }}
-        .stTextInput input:focus, .stNumberInput input:focus {{
+        
+        
+        [data-baseweb="select"] span {{
+            color: #2B2323 !important;
+        }}
+        
+        
+        .stTextInput input:focus,
+        .stNumberInput input:focus,
+        .stDateInput input:focus,
+        .stTimeInput input:focus {{
             border-color: var(--rose) !important;
             box-shadow: 0 0 0 1px var(--rose) !important;
         }}
@@ -166,6 +193,16 @@ def apply_theme():
             border-color: var(--border) !important;
             margin: 1.75rem 0 !important;
         }}
+        
+        /* ---------- global text visibility fix ---------- */
+
+        .stApp p,
+        .stApp label,
+        .stApp span,
+        .stApp div {{
+            color: var(--ink);
+        }}
+
         </style>
         """,
         unsafe_allow_html=True,
