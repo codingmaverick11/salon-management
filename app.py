@@ -27,10 +27,10 @@ st.subheader("Employee Details")
 employee = st.selectbox(
     "Employee Name",
     [
+        "Rajni",
         "Kiran",
-        "Neha",
-        "Pooja",
-        "Other"
+        "Emp3",
+        "Emp4"
     ]
 )
 
