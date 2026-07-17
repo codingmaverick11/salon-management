@@ -545,7 +545,7 @@ def create_pdf_report(revenue, customers):
     pdf.output(
         "Salon_Report.pdf"
     )
-
+#
 def get_user_by_username(username):
 
         conn = connect()
