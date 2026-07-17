@@ -1,14 +1,15 @@
 import psycopg2
+import streamlit as st
 from fpdf import FPDF
 
 
 def connect():
 
     conn = psycopg2.connect(
-        host="db.xulfjrwtqflkhvkmlxwi.supabase.co",
+        host=st.secrets["host"],
         database="postgres",
-        user="postgres",
-        password="a$h+_!/XCDy54dW",
+        user=st.secrets["user"],
+        password=st.secrets["password"],
         port="5432"
     )
 
