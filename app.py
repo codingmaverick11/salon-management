@@ -42,12 +42,24 @@ if "user" not in st.session_state:
 
 # ---------------- AUTO LOGIN FROM COOKIE ----------------
 
-saved_user = cookie_manager.get("logged_in_user")
+if "logged_out" not in st.session_state:
+    st.session_state.logged_out = False
 
 
-if st.session_state.user is None and saved_user:
+saved_user = cookie_manager.get(
+    "logged_in_user"
+)
 
-    user = get_user_by_username(saved_user)
+
+if (
+    st.session_state.user is None
+    and saved_user
+    and not st.session_state.logged_out
+):
+
+    user = get_user_by_username(
+        saved_user
+    )
 
     if user:
         st.session_state.user = user
@@ -83,6 +95,7 @@ if st.session_state.user is None:
 
         if user:
 
+            st.session_state.logged_out = False
             st.session_state.user = user
 
 
@@ -119,21 +132,16 @@ else:
         f"Logged in as: {user['username']}"
     )
 
-
     if st.sidebar.button(
-        "Logout",
-        use_container_width=True
+            "Logout",
+            use_container_width=True
     ):
-
-
-        # Delete saved phone login
         cookie_manager.delete(
             "logged_in_user"
         )
 
-
-        # Clear all Streamlit session data
-        st.session_state.clear()
+        # Prevent auto login after logout
+        st.session_state.logged_out = True
 
         st.session_state.user = None
 
