@@ -1,4 +1,3 @@
-from design import apply_theme
 import streamlit as st
 from datetime import datetime
 import pytz
@@ -28,8 +27,6 @@ st.set_page_config(
     page_icon="💇",
     layout="centered"
 )
-
-apply_theme()
 
 # ---------------- COOKIE MANAGER (singleton) ----------------
 # IMPORTANT: don't recreate this on every rerun — cache it in session_state.
