@@ -49,115 +49,59 @@ st.divider()
 
 st.subheader("📝 Create Job Card")
 
-
 with st.form("job_card_form"):
+    customer = st.text_input("Customer Name")
 
-    customer = st.text_input(
-        "Customer Name"
-    )
-
-
-    phone = st.text_input(
-        "Phone Number"
-    )
-
+    # Streamlit returns an empty string ("") if left blank
+    phone = st.text_input("Phone Number")
 
     service = st.selectbox(
         "Service",
-        [
-            "Threading",
-            "Haircut",
-            "Facial",
-            "Waxing",
-            "Hair Color",
-            "Nails",
-            "Spa",
-            "Other"
-        ]
+        ["Threading", "Haircut", "Facial", "Waxing", "Hair Color", "Nails", "Spa", "Other"]
     )
 
-
     if service == "Other":
-
-        custom_service = st.text_input(
-            "Specify Service"
-        )
-
+        custom_service = st.text_input("Specify Service")
         if custom_service:
             service = custom_service
 
+    amount = st.number_input("Amount", min_value=0, value=None, step=1, placeholder="Enter amount")
 
-    amount = st.number_input(
-        "Amount",
-        min_value=0,
-        value=None,
-        step=1,
-        placeholder="Enter amount"
-    )
+    payment = st.selectbox("Payment Mode", ["Cash", "UPI", "Card"])
 
+    # Forms MUST use st.form_submit_button
+    submitted = st.form_submit_button("Save Job Card", use_container_width=True)
 
-    payment = st.selectbox(
-        "Payment Mode",
-        [
-            "Cash",
-            "UPI",
-            "Card"
-        ]
-    )
+# Process the data only when the form is submitted
+if submitted:
+    # Set phone to Python's None (NULL in SQL) if it's left completely blank
+    final_phone = phone.strip() if phone.strip() != "" else None
 
-# Automatic timestamp
+    # Automatic timestamp
+    india_timezone = pytz.timezone("Asia/Kolkata")
+    current_time = datetime.now(india_timezone)
+    date = current_time.date()
+    time = current_time.time()
 
-india_timezone = pytz.timezone(
-    "Asia/Kolkata"
-)
-
-current_time = datetime.now(
-    india_timezone
-)
-
-
-date = current_time.date()
-
-time = current_time.time()
-
-
-
-st.info(
-    f"Visit Time: {date} | {time.strftime('%H:%M:%S')}"
-)
-
-
-
-if st.button(
-    "Save Job Card",
-    use_container_width=True
-):
-
+    # Note: Ensure the 'employee' variable is defined somewhere in your app before this check
     if not customer or not employee:
-
-        st.error(
-            "Please fill all required details"
-        )
-
-
+        st.error("Please fill all required details (Customer Name and Employee)")
     else:
-
-        add_job_card(
-            customer,
-            phone if phone else None,
-            service,
-            amount,
-            payment,
-            employee,
-            date,
-            time
-        )
-
-
-        st.success(
-            "✅ Job Card Saved Successfully"
-        )
-
+        try:
+            add_job_card(
+                customer,
+                final_phone,
+                service,
+                amount,
+                payment,
+                employee,
+                date,
+                time
+            )
+            st.success("✅ Job Card Saved Successfully")
+            st.info(f"Visit Time: {date} | {time.strftime('%H:%M:%S')}")
+        except Exception as e:
+            st.error(f"Failed to save job card: {e}")
 
 
 st.divider()
