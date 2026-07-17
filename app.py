@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import extra_streamlit_components as stx
 from database import (
     login,
     add_job_card,
@@ -24,6 +25,8 @@ st.set_page_config(
     layout="centered"
 )
 
+cookie_manager = stx.CookieManager()
+
 
 # Session state for keeping user logged in
 if "user" not in st.session_state:
@@ -31,6 +34,27 @@ if "user" not in st.session_state:
 
 
 st.title("Salon Management")
+
+
+# ---------------- LOGIN PAGE ----------------
+
+# ---------------- LOGIN SYSTEM ----------------
+
+# Check saved login cookie
+saved_user = cookie_manager.get("logged_in_user")
+
+
+if "user" not in st.session_state:
+    st.session_state.user = None
+
+
+# Auto login from cookie
+if st.session_state.user is None and saved_user:
+
+    user = get_user_by_username(saved_user)
+
+    if user:
+        st.session_state.user = user
 
 
 # ---------------- LOGIN PAGE ----------------
@@ -47,17 +71,33 @@ if st.session_state.user is None:
     )
 
 
-    if st.button("Login", use_container_width=True):
+    if st.button(
+        "Login",
+        use_container_width=True
+    ):
 
         user = login(username, password)
 
         if user:
+
             st.session_state.user = user
+
+            # Save login on phone
+            cookie_manager.set(
+                "logged_in_user",
+                user["username"]
+            )
+
             st.success("Login Successful!")
+
             st.rerun()
 
+
         else:
-            st.error("Invalid Username or Password")
+
+            st.error(
+                "Invalid Username or Password"
+            )
 
 
 # ---------------- AFTER LOGIN ----------------
@@ -71,8 +111,18 @@ else:
         f"Logged in as: {user['username']}"
     )
 
-    if st.sidebar.button("Logout", use_container_width=True):
+
+    if st.sidebar.button(
+        "Logout",
+        use_container_width=True
+    ):
+
+        cookie_manager.delete(
+            "logged_in_user"
+        )
+
         st.session_state.user = None
+
         st.rerun()
 
 

@@ -545,3 +545,33 @@ def create_pdf_report(revenue, customers):
     pdf.output(
         "Salon_Report.pdf"
     )
+
+    def get_user_by_username(username):
+        conn = connect()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT *
+        FROM users
+        WHERE username=%s
+        """
+
+        cursor.execute(
+            query,
+            (username,)
+        )
+
+        row = cursor.fetchone()
+
+        columns = [
+            desc[0]
+            for desc in cursor.description
+        ]
+
+        cursor.close()
+        conn.close()
+
+        if row:
+            return dict(zip(columns, row))
+
+        return None
