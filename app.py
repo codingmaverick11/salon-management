@@ -115,66 +115,41 @@ with st.form("job_card_form"):
 
 if save_job:
 
-    if "confirm_job" not in st.session_state:
-        st.session_state.confirm_job = False
+    india_timezone = pytz.timezone(
+        "Asia/Kolkata"
+    )
+
+    current_time = datetime.now(
+        india_timezone
+    )
+
+    date = current_time.date()
+    time = current_time.time()
 
 
-    st.session_state.confirm_job = True
+    if not customer or not employee:
+
+        st.error(
+            "Please fill Customer Name and Employee"
+        )
+
+    else:
+
+        add_job_card(
+            customer,
+            phone if phone else None,
+            service,
+            amount,
+            payment,
+            employee,
+            date,
+            time
+        )
 
 
-
-if st.session_state.get("confirm_job"):
-
-    st.warning("Confirm saving this job card?")
-
-
-    col1, col2 = st.columns(2)
-
-
-    with col1:
-
-        if st.button("Yes, Save"):
-
-            india_timezone = pytz.timezone(
-                "Asia/Kolkata"
-            )
-
-            current_time = datetime.now(
-                india_timezone
-            )
-
-            date = current_time.date()
-            time = current_time.time()
-
-
-            add_job_card(
-                customer,
-                phone if phone else None,
-                service,
-                amount,
-                payment,
-                employee,
-                date,
-                time
-            )
-
-
-            st.success(
-                "✅ Job Card Saved Successfully"
-            )
-
-
-            st.session_state.confirm_job = False
-
-
-
-    with col2:
-
-        if st.button("Cancel"):
-
-            st.session_state.confirm_job = False
-            st.rerun()
-
+        st.success(
+            "✅ Job Card Saved Successfully"
+        )
 
 
 # Automatic timestamp
@@ -205,7 +180,7 @@ if st.button(
     use_container_width=True
 ):
 
-    if not customer or not phone or not employee:
+    if not customer or not employee:
 
         st.error(
             "Please fill all required details"
